@@ -77,25 +77,25 @@ begWBodyM1:
 #      valsToDo = GetOneIntByVal(vtdPrompt);			
 			
 ####################(3)####################			
-		addi $a0, $sp, -55           
+		addi $a0, $sp, 55           
 		jal GetOneIntByVal          
-		sw $v0, -78($sp)           
+		sw $v0, 78($sp)           
 # 		  BREAK			  #
 		
 #      ValidateInt(&valsToDo, 1, 7, adjMsg);			
 			
 ####################(4)####################			
-		addi $a0, $sp, -78       
+		addi $a0, $sp, 78       
 		li $a1, 1                   
 		li $a2, 7                   
-		addi $a3, $sp, -11           
+		addi $a3, $sp, 11           
 		jal ValidateInt
 # 		  BREAK			  #        
         
 #      for (i = valsToDo; i > 0; --i)			
 			
 ####################(1)####################			
-		lw $t1, -78($sp)       	
+		lw $t1, 78($sp)       	
 			
 		j FTestM1	
 begFBodyM1:			
@@ -105,14 +105,14 @@ begFBodyM1:
 #            intArr[valsToDo - i] = GetOneIntByVal(entIntPrompt);			
 			
 ####################(8)####################			
-    		lw $t2, -78($sp)           # Load valsToDo into $t2
+    		lw $t2, 78($sp)           # Load valsToDo into $t2
 		sub $t2, $t2, $t1          # t2 = valsToDo - i
 		sll $t2, $t2, 2            # t2 = (valsToDo - i) * 4
 
-		addiu $t3, $sp, -84        # Base address of intArr
+		addiu $t3, $sp, 82        # Base address of intArr
 		add $t3, $t3, $t2          # Address of intArr[valsToDo - i]
 
-		addi $a0, $sp, -29          # Address of entIntPrompt
+		addi $a0, $sp, 29          # Address of entIntPrompt
 		jal GetOneIntByVal         # Call GetOneIntByVal
 
 		sw $v0, 0($t3)             # Store result in intArr[valsToDo - i]   
@@ -126,14 +126,14 @@ ElseI1:
 #            GetOneIntByAddr(intArr + valsToDo - i, entIntPrompt);			
 			
 ####################(7)####################			
-		lw $t2, -78($sp)       
+		lw $t2, 78($sp)       
     		sub $t2, $t2, $t1       
     		sll $t2, $t2, 2         
 
-    		addiu $t3, $sp, -84   
+    		addiu $t3, $sp, 82   
     		add $a0, $t3, $t2       
 
-    		addi $a1, $sp, -29      
+    		addi $a1, $sp, 29      
 
     		jal GetOneIntByAddr
 # 		  BREAK			  #		
@@ -148,9 +148,9 @@ FTestM1:
 #      ShowIntArray(intArr, valsToDo, origLab);			
 			
 ####################(3)####################			
-    		addi $a0, $sp, -84        # Address of intArr (base address of the array)
-		lw $a1, -78($sp)          # Load valsToDo into $a1 (size of the array)
-		addi $a2, $sp, -44        # Address of origLab (label for output)
+    		addi $a0, $sp, 82        # Address of intArr (base address of the array)
+		lw $a1, 78($sp)          # Load valsToDo into $a1 (size of the array)
+		addi $a2, $sp, 44        # Address of origLab (label for output)
 
 		jal ShowIntArray          # Call ShowIntArray	
 # 		  BREAK			  #
@@ -158,7 +158,7 @@ FTestM1:
 #      for (i = 0, j = valsToDo - 1; i < j; ++i, --j)			
 ####################(3)####################			
     		li $t1, 0              
-    		lw $t2, -78($sp)       
+    		lw $t2, 78($sp)       
     		addi $t2, $t2, -1       
 		
 		
@@ -171,7 +171,7 @@ begFBodyM2:
 			
 ####################(5)####################			
     		sll $t3, $t1, 2           # Calculate offset for i (i * 4)
-		addiu $t4, $sp, -84        # Base address of intArr
+		addiu $t4, $sp, 82        # Base address of intArr
 		add $a0, $t4, $t3          # Address of intArr[i]
 
 		sll $t3, $t2, 2           # Calculate offset for j (j * 4)
@@ -187,8 +187,8 @@ FTestM2:
 #      ShowIntArray(intArr, valsToDo, backLab);			
 			
 ####################(3)####################			
-		addi $a0, $sp, -84        # Address of intArr (base address of the array)
-		lw $a1, -78($sp)          # Load valsToDo into $a1 (size of the array)
+		addi $a0, $sp, 82        # Address of intArr (base address of the array)
+		lw $a1, 78($sp)          # Load valsToDo into $a1 (size of the array)
 		addi $a2, $sp, 0          # Address of backLab (label for output)
 
 		jal ShowIntArray          # Call ShowIntArray	
@@ -197,8 +197,8 @@ FTestM2:
 #      GetOneCharByAddr(&reply, dmPrompt);			
 			
 ####################(2)####################			
-    		addi $a0, $sp, -110       # Address of reply
-		addi $a1, $sp, -68        # Address of dmPrompt
+    		addi $a0, $sp, 110       # Address of reply
+		addi $a1, $sp, 68        # Address of dmPrompt
 
 		jal GetOneCharByAddr      # Call GetOneCharByAddr
 # 		  BREAK			  #
@@ -207,7 +207,7 @@ FTestM2:
 #   while (reply != 'n' && reply != 'N');			
 			
 ####################(1)####################			
-    		lb $v1, -110($sp)       
+    		lb $v1, 68($sp)       
 # 		  BREAK			  #    				
 			
 		li $t0, 'n'	
