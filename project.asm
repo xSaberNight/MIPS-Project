@@ -1,4 +1,41 @@
 ################################################################################			
+# Sample test run:			
+##################			
+# 			
+# vals to do? 4			
+# enter an int: 1			
+# enter an int: 2			
+# enter an int: 3			
+# enter an int: 4			
+# original:			
+# 1 2 3 4 			
+# backward:			
+# 4 3 2 1 			
+# do more? y			
+# vals to do? 0			
+# 0 is bad, make it 1			
+# enter an int: 5			
+# original:			
+# 5 			
+# backward:			
+# 5 			
+# do more? y			
+# vals to do? 8			
+# 8 is bad, make it 7			
+# enter an int: 7			
+# enter an int: 6			
+# enter an int: 5			
+# enter an int: 4			
+# enter an int: 3			
+# enter an int: 2			
+# enter an int: 1			
+# original:			
+# 7 6 5 4 3 2 1 			
+# backward:			
+# 1 2 3 4 5 6 7 			
+# do more? n			
+# -- program is finished running --			
+################################################################################			
 # int GetOneIntByVal(const char vtdPrompt[]);			
 # void GetOneIntByAddr(int* intVarToPutInPtr,const char prompt[]);			
 # void GetOneCharByAddr(char* charVarToPutInPtr, const char prompt[]);			
@@ -28,7 +65,7 @@ main:
 # $t1: i			
 # $t2: j			
 #################			
-		addiu $sp, $sp, -120	
+		addiu $sp, $sp, -114	
 		j StrInitCode	# clutter-reduction jump (string initialization)
 endStrInit:			
 #   do			
@@ -40,25 +77,25 @@ begWBodyM1:
 #      valsToDo = GetOneIntByVal(vtdPrompt);			
 			
 ####################(3)####################			
-		addi $a0, $sp, 0           # Address of "vals to do?" string on the stack
+		addi $a0, $sp, -55           
 		jal GetOneIntByVal          
-		sw $v0, -120($sp)           
+		sw $v0, -78($sp)           
 # 		  BREAK			  #
 		
 #      ValidateInt(&valsToDo, 1, 7, adjMsg);			
 			
 ####################(4)####################			
-		addi $a0, $sp, -120       
+		addi $a0, $sp, -78       
 		li $a1, 1                   
 		li $a2, 7                   
-		addi $a3, $sp, 20           
+		addi $a3, $sp, -11           
 		jal ValidateInt
 # 		  BREAK			  #        
         
 #      for (i = valsToDo; i > 0; --i)			
 			
 ####################(1)####################			
-		lw $t1, -120($sp)       	
+		lw $t1, -78($sp)       	
 			
 		j FTestM1	
 begFBodyM1:			
@@ -68,13 +105,17 @@ begFBodyM1:
 #            intArr[valsToDo - i] = GetOneIntByVal(entIntPrompt);			
 			
 ####################(8)####################			
-    		lw $t2, -120($sp)           # Load valsToDo into $t2
-		sub $t2, $t2, $t1           # t2 = valsToDo - i
-		sll $t2, $t2, 2             # t2 = (valsToDo - i) * 4
+    		lw $t2, -78($sp)           # Load valsToDo into $t2
+		sub $t2, $t2, $t1          # t2 = valsToDo - i
+		sll $t2, $t2, 2            # t2 = (valsToDo - i) * 4
 
-		addiu $t3, $sp, -100        # Base address of intArr
-		add $t3, $t3, $t2           # Address of intArr[valsToDo - i]
-		sw $v0, 0($t3)              # Store result in intArr[valsToDo - i]   
+		addiu $t3, $sp, -84        # Base address of intArr
+		add $t3, $t3, $t2          # Address of intArr[valsToDo - i]
+
+		addi $a0, $sp, -29          # Address of entIntPrompt
+		jal GetOneIntByVal         # Call GetOneIntByVal
+
+		sw $v0, 0($t3)             # Store result in intArr[valsToDo - i]   
 # 		  BREAK			  #		
 		
 		
@@ -85,14 +126,14 @@ ElseI1:
 #            GetOneIntByAddr(intArr + valsToDo - i, entIntPrompt);			
 			
 ####################(7)####################			
-		lw $t2, -120($sp)       
+		lw $t2, -78($sp)       
     		sub $t2, $t2, $t1       
     		sll $t2, $t2, 2         
 
-    		addiu $t3, $sp, -100   
+    		addiu $t3, $sp, -84   
     		add $a0, $t3, $t2       
 
-    		addi $a1, $sp, 60      
+    		addi $a1, $sp, -29      
 
     		jal GetOneIntByAddr
 # 		  BREAK			  #		
@@ -107,18 +148,17 @@ FTestM1:
 #      ShowIntArray(intArr, valsToDo, origLab);			
 			
 ####################(3)####################			
-    		addi $a0, $sp, -100     
-    		lw $a1, -120($sp)       
-    		addi $a2, $sp, 40       		
-		
-			
-		jal ShowIntArray	
+    		addi $a0, $sp, -84        # Address of intArr (base address of the array)
+		lw $a1, -78($sp)          # Load valsToDo into $a1 (size of the array)
+		addi $a2, $sp, -44        # Address of origLab (label for output)
+
+		jal ShowIntArray          # Call ShowIntArray	
 # 		  BREAK			  #
 			
 #      for (i = 0, j = valsToDo - 1; i < j; ++i, --j)			
 ####################(3)####################			
     		li $t1, 0              
-    		lw $t2, -120($sp)       
+    		lw $t2, -78($sp)       
     		addi $t2, $t2, -1       
 		
 		
@@ -130,17 +170,14 @@ begFBodyM2:
 #         SwapTwoInts(intArr + i, intArr + j);			
 			
 ####################(5)####################			
-    		sll $t3, $t1, 2        
-    		addiu $t4, $sp, -100    
-    		add $a0, $t4, $t3       
+    		sll $t3, $t1, 2           # Calculate offset for i (i * 4)
+		addiu $t4, $sp, -84        # Base address of intArr
+		add $a0, $t4, $t3          # Address of intArr[i]
 
-    		sll $t3, $t2, 2         
-    		add $a1, $t4, $t3       
-			
-					
-		
-			
-		jal SwapTwoInts	
+		sll $t3, $t2, 2           # Calculate offset for j (j * 4)
+		add $a1, $t4, $t3          # Address of intArr[j]
+
+		jal SwapTwoInts            # Call SwapTwoInts	
 # 		  BREAK			  #
 			
 		addi $t1, $t1, 1	
@@ -150,22 +187,20 @@ FTestM2:
 #      ShowIntArray(intArr, valsToDo, backLab);			
 			
 ####################(3)####################			
-    		addi $a0, $sp, -100    
-    		lw $a1, -120($sp)       
-    		addi $a2, $sp, 50       		
-		
-			
-		jal ShowIntArray	
+		addi $a0, $sp, -84        # Address of intArr (base address of the array)
+		lw $a1, -78($sp)          # Load valsToDo into $a1 (size of the array)
+		addi $a2, $sp, 0          # Address of backLab (label for output)
+
+		jal ShowIntArray          # Call ShowIntArray	
 # 		  BREAK			  #
 			
 #      GetOneCharByAddr(&reply, dmPrompt);			
 			
 ####################(2)####################			
-    		addi $a0, $sp, -110     
-    		addi $a1, $sp, 60       	
-		
-			
-		jal GetOneCharByAddr
+    		addi $a0, $sp, -110       # Address of reply
+		addi $a1, $sp, -68        # Address of dmPrompt
+
+		jal GetOneCharByAddr      # Call GetOneCharByAddr
 # 		  BREAK			  #
 	
 #   }			
